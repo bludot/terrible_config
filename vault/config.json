@@ -1,0 +1,11 @@
+
+{
+
+  "DB": {
+    "Host": "localhost",
+    "User": "dbuser",
+    "Password": "dbpass",
+    "Name": "derp",
+    "Port": 3306
+  }
+}

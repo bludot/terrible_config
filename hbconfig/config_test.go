@@ -17,8 +17,9 @@ func TestNewDynamicConfig(t *testing.T) {
 	t.Run("should return a new DynamicConfigService", func(t *testing.T) {
 		a := assert.New(t)
 		cfg := config.Config{}
-		dynamicConfigService := hbconfig.NewDynamicConfig(&cfg)
-		err := dynamicConfigService.LoadConfig()
+		dynamicConfigService, err := hbconfig.NewDynamicConfig(&cfg)
+		a.NoError(err)
+		err = dynamicConfigService.LoadConfig()
 		a.NoError(err)
 		a.NotNil(dynamicConfigService)
 	})
@@ -28,9 +29,10 @@ func TestGetDynamicConfig(t *testing.T) {
 	t.Run("should return the config", func(t *testing.T) {
 		cfg := config.Config{}
 		a := assert.New(t)
-		dynamicConfigService := hbconfig.NewDynamicConfig(&cfg)
+		dynamicConfigService, err := hbconfig.NewDynamicConfig(&cfg)
+		a.NoError(err)
 		a.NotNil(dynamicConfigService)
-		err := dynamicConfigService.LoadConfig()
+		err = dynamicConfigService.LoadConfig()
 		a.NoError(err)
 		conf := hbconfig.GetDynamicConfig()
 		a.NotNil(conf)
@@ -38,9 +40,10 @@ func TestGetDynamicConfig(t *testing.T) {
 	t.Run("verify change of config", func(t *testing.T) {
 		cfg := config.Config{}
 		a := assert.New(t)
-		dynamicConfigService := hbconfig.NewDynamicConfig(&cfg, "../vault")
+		dynamicConfigService, err := hbconfig.NewDynamicConfig(&cfg, "../vault")
+		a.NoError(err)
 		a.NotNil(dynamicConfigService)
-		err := dynamicConfigService.LoadConfig()
+		err = dynamicConfigService.LoadConfig()
 		a.NoError(err)
 		var conf *config.Config
 		c := hbconfig.GetDynamicConfig()
@@ -90,7 +93,8 @@ func TestGetDynamicConfig(t *testing.T) {
 		triggeredValue := "nil"
 		cfg := config.Config{}
 		a := assert.New(t)
-		dynamicConfigService := hbconfig.NewDynamicConfig(&cfg, "../vault")
+		dynamicConfigService, err := hbconfig.NewDynamicConfig(&cfg, "../vault")
+		a.NoError(err)
 		hbconfig.RegisterAutoloadCallback(func() {
 			var conf *config.Config
 			c := hbconfig.GetDynamicConfig()
@@ -98,7 +102,7 @@ func TestGetDynamicConfig(t *testing.T) {
 			triggeredValue = conf.Reload.Trigger
 		})
 		a.NotNil(dynamicConfigService)
-		err := dynamicConfigService.LoadConfig()
+		err = dynamicConfigService.LoadConfig()
 		a.NoError(err)
 		var conf *config.Config
 		c := hbconfig.GetDynamicConfig()

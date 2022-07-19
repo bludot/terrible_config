@@ -23,12 +23,17 @@ type DynamicConfigService struct {
 
 type DynamicConfig struct{}
 
-func NewDynamicConfig(config any, dirs ...string) *DynamicConfigService {
-
+func NewDynamicConfig(config any, dirs ...string) (*DynamicConfigService, error) {
+	var err error
 	files := make([]string, 0)
 	for _, dir := range dirs {
-		files = append(files, getDirFiles(dir)...)
+		dirFiles, dirFilesErr := getDirFiles(dir)
+		if err == nil {
+			err = dirFilesErr
+		}
+		files = append(files, dirFiles...)
 	}
+
 	if dynamicConfigService == nil {
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
@@ -45,7 +50,7 @@ func NewDynamicConfig(config any, dirs ...string) *DynamicConfigService {
 	dynamicConfigService.reload()
 	dynamicConfigService.LoadConfig()
 
-	return dynamicConfigService
+	return dynamicConfigService, err
 }
 
 type AutoloadCallback func()
@@ -108,20 +113,23 @@ func (d *DynamicConfigService) watchFile(file string) {
 			}
 		}
 	}()
-
-	err := d.watcher.Add(file)
-	if err != nil {
-		log.Fatal(err.Error())
+	// check if file exists
+	if _, err := os.Stat(file); err == nil {
+		err = d.watcher.Add(file)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 	}
+
 	<-d.watcherChan
 }
 
-func getDirFiles(dir string) []string {
+func getDirFiles(dir string) ([]string, error) {
 	relativeDir := path.Join(dir)
 	// get files in dir
 	files, err := ioutil.ReadDir(relativeDir)
 	if err != nil {
-		panic(err)
+		return []string{}, err
 	}
 
 	fileNames := []string{}
@@ -136,7 +144,7 @@ func getDirFiles(dir string) []string {
 		}
 	}
 
-	return fileNames
+	return fileNames, nil
 }
 
 var startedWatch = false

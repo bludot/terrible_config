@@ -13,7 +13,18 @@ import (
 
 func loadConfigOrPanic() config.Config {
 	cfg := config.Config{}
-	_ = hbconfig.NewDynamicConfig(&cfg, os.Getenv("VAULT_AGENT_SECRETS_PATH"))
+	count := 0
+	for {
+		_, err := hbconfig.NewDynamicConfig(&cfg, os.Getenv("VAULT_AGENT_SECRETS_PATH"))
+		if err == nil {
+			break
+		}
+		count++
+		if count > 10 {
+			panic("Could not load config")
+		}
+		time.Sleep(time.Second * 1)
+	}
 
 	c := hbconfig.GetDynamicConfig()
 	conf := c.(*config.Config)
@@ -40,7 +51,7 @@ func main() {
 		return c.SendString(string(confString))
 	})
 
-	err := app.Listen(":3001")
+	err := app.Listen(":3000")
 	if err != nil {
 		log.Fatal(err)
 	}

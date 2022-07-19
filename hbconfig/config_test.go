@@ -38,7 +38,7 @@ func TestGetDynamicConfig(t *testing.T) {
 	t.Run("verify change of config", func(t *testing.T) {
 		cfg := config.Config{}
 		a := assert.New(t)
-		dynamicConfigService := hbconfig.NewDynamicConfig(&cfg, "vault")
+		dynamicConfigService := hbconfig.NewDynamicConfig(&cfg, "../vault")
 		a.NotNil(dynamicConfigService)
 		err := dynamicConfigService.LoadConfig()
 		a.NoError(err)
@@ -90,7 +90,7 @@ func TestGetDynamicConfig(t *testing.T) {
 		triggeredValue := "nil"
 		cfg := config.Config{}
 		a := assert.New(t)
-		dynamicConfigService := hbconfig.NewDynamicConfig(&cfg, "vault")
+		dynamicConfigService := hbconfig.NewDynamicConfig(&cfg, "../vault")
 		hbconfig.RegisterAutoloadCallback(func() {
 			var conf *config.Config
 			c := hbconfig.GetDynamicConfig()

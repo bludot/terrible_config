@@ -117,8 +117,7 @@ func (d *DynamicConfigService) watchFile(file string) {
 }
 
 func getDirFiles(dir string) []string {
-	_, filename, _, _ := runtime.Caller(0)
-	relativeDir := path.Join(path.Dir(filename), "../", dir)
+	relativeDir := path.Join(dir)
 	// get files in dir
 	files, err := ioutil.ReadDir(relativeDir)
 	if err != nil {
@@ -144,7 +143,6 @@ var startedWatch = false
 
 func (d *DynamicConfigService) LoadConfig() error {
 
-	log.Println("Run triggered")
 	configFiles := d.files
 
 	configFiles = append(configFiles, []string{fmt.Sprintf("%s/config.%s.json", getConfigLocation("config"), getEnv())}...)

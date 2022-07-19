@@ -31,7 +31,7 @@ func logFile() {
 func main() {
 
 	_ = loadConfigOrPanic()
-	log.Println("Test")
+
 	go logFile()
 	app := fiber.New()
 	app.Get("/", func(c *fiber.Ctx) error {

@@ -37,7 +37,7 @@ func NewDynamicConfig(config any, dirs ...string) (*DynamicConfigService, error)
 	if dynamicConfigService == nil {
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
-			log.Fatal(err.Error())
+			return nil, err
 		}
 		dynamicConfigService = &DynamicConfigService{
 			Config:  config,
